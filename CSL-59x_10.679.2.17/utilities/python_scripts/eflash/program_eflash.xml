@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<program_eflash>
+    <product_id>DA1459x-00</product_id>
+    <product_header>
+        <active_fw_image_address>0x2000</active_fw_image_address>
+        <update_fw_image_address>0x2000</update_fw_image_address>
+        <flash_name>EFLASH</flash_name>
+        <flash_size>0x40000</flash_size>
+        <flash_burstcmda_reg_value>0xffffffff</flash_burstcmda_reg_value>
+        <flash_burstcmdb_reg_value>0xffffffff</flash_burstcmdb_reg_value>
+        <flash_write_config_command/>
+    </product_header>
+</program_eflash>

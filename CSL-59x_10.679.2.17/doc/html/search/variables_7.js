@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['gap_5fppcp_13046',['gap_ppcp',['../structble__dev__params__tag.html#a1b98eb54864d570683e1423cd8a9f073',1,'ble_dev_params_tag']]],
+  ['ge_13047',['GE',['../union_a_p_s_r___type.html#adcb98a5b9c93b0cb69cdb7af5638f32e',1,'APSR_Type::GE()'],['../unionx_p_s_r___type.html#a2d0ec4ccae337c1df5658f8cf4632e76',1,'xPSR_Type::GE()']]],
+  ['get_5fdummy_5fbytes_5fcb_13048',['get_dummy_bytes_cb',['../structqspi__callback__t.html#aa4376de227700fa6e9245414f4802f0e',1,'qspi_callback_t']]],
+  ['get_5fevent_5fstate_5fcompleted_13049',['get_event_state_completed',['../structbas__client__callbacks__t.html#afb5941942781bb502f9e8abbc5c54fef',1,'bas_client_callbacks_t::get_event_state_completed()'],['../structcscs__client__callbacks__t.html#a91e63293456c5f619e4d1abf35eb2c77',1,'cscs_client_callbacks_t::get_event_state_completed()'],['../structhrs__client__callbacks__t.html#a38a658f8cc37fc795935d8a03503efb3',1,'hrs_client_callbacks_t::get_event_state_completed()'],['../structscps__client__callbacks__t.html#ad06f3d0e81d90cbf8cb296046cd4cb6e',1,'scps_client_callbacks_t::get_event_state_completed()']]],
+  ['get_5fref_5ftime_5finfo_13050',['get_ref_time_info',['../structcts__callbacks__t.html#a1a7beffda290cee70d560652335ae566',1,'cts_callbacks_t']]],
+  ['get_5fsc_5fcontrol_5fpoint_5fstate_5fcompleted_13051',['get_sc_control_point_state_completed',['../structcscs__client__callbacks__t.html#aed5b04631dbf0ff054bf054ef58b0b5b',1,'cscs_client_callbacks_t']]],
+  ['get_5ftime_13052',['get_time',['../structcts__callbacks__t.html#a87b0cd219c51080dfb95f67ec862a1cb',1,'cts_callbacks_t']]],
+  ['gp_5fadc_5fclear_5fint_5freg_13053',['GP_ADC_CLEAR_INT_REG',['../struct_g_p_a_d_c___type.html#a0f3fcd61bcb0dc27f993f34ec5c627f7',1,'GPADC_Type']]],
+  ['gp_5fadc_5fctrl2_5freg_13054',['GP_ADC_CTRL2_REG',['../struct_g_p_a_d_c___type.html#a56f98af6b12e5c982c59a3cf21510953',1,'GPADC_Type']]],
+  ['gp_5fadc_5fctrl3_5freg_13055',['GP_ADC_CTRL3_REG',['../struct_g_p_a_d_c___type.html#accf89732e5a8ab68f3f97c8ea2b0f055',1,'GPADC_Type']]],
+  ['gp_5fadc_5fctrl_5freg_13056',['GP_ADC_CTRL_REG',['../struct_g_p_a_d_c___type.html#ae1ff3df7bb2e4a4f226ccabe57ad351f',1,'GPADC_Type']]],
+  ['gp_5fadc_5foffn_5freg_13057',['GP_ADC_OFFN_REG',['../struct_g_p_a_d_c___type.html#a06627bb5f6949a0995fb7242e20d209f',1,'GPADC_Type']]],
+  ['gp_5fadc_5foffp_5freg_13058',['GP_ADC_OFFP_REG',['../struct_g_p_a_d_c___type.html#a18890c298121807626a2eee965e3697b',1,'GPADC_Type']]],
+  ['gp_5fadc_5fresult_5freg_13059',['GP_ADC_RESULT_REG',['../struct_g_p_a_d_c___type.html#aa94c2c907d4e416034f065f8ad1192e2',1,'GPADC_Type']]],
+  ['gp_5fadc_5fsel_5freg_13060',['GP_ADC_SEL_REG',['../struct_g_p_a_d_c___type.html#aadfefcf6ec5a7caf428eed15dd9212f3',1,'GPADC_Type']]],
+  ['gp_5fstatus_5freg_13061',['GP_STATUS_REG',['../struct_g_p_r_e_g___type.html#adcbd19e54c7e56d99e99f80043ef2b3d',1,'GPREG_Type']]],
+  ['gpio_13062',['gpio',['../structtimer__config__oneshot.html#a482697e9dec96b15c20bd7a349888e45',1,'timer_config_oneshot']]],
+  ['gpio1_13063',['gpio1',['../structtimer__config__timer__capture.html#aa188b568d9ec1644580bda8932f53b59',1,'timer_config_timer_capture']]],
+  ['gpio2_13064',['gpio2',['../structtimer__config__timer__capture.html#a77e70dfb56ce31e9e88a629b1482957a',1,'timer_config_timer_capture']]],
+  ['gpio3_13065',['gpio3',['../structtimer__config__timer__capture.html#ace23f1c744cddce693ccc73876b6b9f7',1,'timer_config_timer_capture']]],
+  ['gpio4_13066',['gpio4',['../structtimer__config__timer__capture.html#a598cbb2faf775b4922cda9982c512e96',1,'timer_config_timer_capture']]],
+  ['gpio_5fclk_5fsel_5freg_13067',['GPIO_CLK_SEL_REG',['../struct_g_p_i_o___type.html#ad6650f1cff2f0b1edf5150d02816d33b',1,'GPIO_Type']]],
+  ['gpio_5foutput_5fmode_13068',['gpio_output_mode',['../structhw__pcm__config__t.html#ad23da884909b67516045bc235510c877',1,'hw_pcm_config_t']]],
+  ['gpio_5fsense_13069',['gpio_sense',['../structwkup__config.html#aec706a9fce3e82184a376a50ebff8558',1,'wkup_config']]]
+];

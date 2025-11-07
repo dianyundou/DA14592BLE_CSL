@@ -1,0 +1,3 @@
+Address	Size	Type	RW or RO	Shortname	Description	Group	Default	Number of options
+10080800	1024	String	RW	TSMC manufacturing data	<html>TSMC manufacturing data</html>	Information Page
+10080C00	1024	String_Rev	RO	Dialog production data (CS)	<html>Dialog production data (CS)</html>	Information Page

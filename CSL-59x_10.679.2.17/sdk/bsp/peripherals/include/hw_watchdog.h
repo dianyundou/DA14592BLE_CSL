@@ -1,0 +1,270 @@
+/**
+ * \addtogroup PLA_DRI_PER_TIMERS
+ * \{
+ * \addtogroup HW_WATCHDOG_TIMER Watchdog Timer Driver
+ * \{
+ * \brief Watchdog Timer
+ */
+
+/**
+ ****************************************************************************************
+ *
+ * @file hw_watchdog.h
+ *
+ * @brief Definition of API for the Watchdog timer Low Level Driver.
+ *
+ * Copyright (C) 2015-2023 Renesas Electronics Corporation and/or its affiliates.
+ * All rights reserved. Confidential Information.
+ *
+ * This software ("Software") is supplied by Renesas Electronics Corporation and/or its
+ * affiliates ("Renesas"). Renesas grants you a personal, non-exclusive, non-transferable,
+ * revocable, non-sub-licensable right and license to use the Software, solely if used in
+ * or together with Renesas products. You may make copies of this Software, provided this
+ * copyright notice and disclaimer ("Notice") is included in all such copies. Renesas
+ * reserves the right to change or discontinue the Software at any time without notice.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS". RENESAS DISCLAIMS ALL WARRANTIES OF ANY KIND,
+ * WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. TO THE
+ * MAXIMUM EXTENT PERMITTED UNDER LAW, IN NO EVENT SHALL RENESAS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE, EVEN IF RENESAS HAS BEEN ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES. USE OF THIS SOFTWARE MAY BE SUBJECT TO TERMS AND CONDITIONS CONTAINED IN
+ * AN ADDITIONAL AGREEMENT BETWEEN YOU AND RENESAS. IN CASE OF CONFLICT BETWEEN THE TERMS
+ * OF THIS NOTICE AND ANY SUCH ADDITIONAL LICENSE AGREEMENT, THE TERMS OF THE AGREEMENT
+ * SHALL TAKE PRECEDENCE. BY CONTINUING TO USE THIS SOFTWARE, YOU AGREE TO THE TERMS OF
+ * THIS NOTICE.IF YOU DO NOT AGREE TO THESE TERMS, YOU ARE NOT PERMITTED TO USE THIS
+ * SOFTWARE.
+ *
+ ****************************************************************************************
+ */
+
+#ifndef HW_WATCHDOG_H_
+#define HW_WATCHDOG_H_
+
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <sdk_defs.h>
+
+#define NMI_MAGIC_NUMBER                0xDEADBEEF
+
+/**
+ * \brief Holds the stack contents when an NMI occurs.
+ *
+ * \details The stack contents are copied at this variable when an NMI occurs. The first position is
+ *        marked with a special "flag" (0xDEADBEEF) to indicate that the data that follow are valid.
+ */
+extern volatile uint32_t nmi_event_data[9];
+
+/**
+ * \brief Types of generated states if reload value is 0
+ *
+ * Generate NMI (non-maskable interrupt) or RST (reset of the system)
+ *
+ */
+typedef enum {
+        HW_WDG_RESET_NMI = 0,     /**< Generate NMI if the watchdog reaches 0 and WDOG reset if the counter become less or equal to -16 */
+        HW_WDG_RESET_RST = 1      /**< Generate WDOG reset it the counter becomes less or equal than 0 */
+} HW_WDG_RESET;
+
+/**
+ * \brief Watchdog timer interrupt callback
+ *
+ * \param [in] hardfault_args pointer to call stack
+ *
+ */
+typedef void (*hw_watchdog_interrupt_cb)(unsigned long *exception_args);
+
+
+/**
+ * \brief Freeze the watchdog
+ *
+ * \return true if operation is allowed, else false
+ *
+ */
+__ALWAYS_RETAINED_CODE bool hw_watchdog_freeze(void);
+
+/**
+ * \brief Unfreeze the watchdog
+ *
+ * \return true if operation is allowed, else false
+ *
+ */
+__RETAINED_CODE bool hw_watchdog_unfreeze(void);
+
+/**
+ * \brief Check if watchdog is busy writing the watchdog counter
+ */
+__STATIC_FORCEINLINE bool hw_watchdog_check_write_busy(void)
+{
+        return (!!(REG_GETF(SYS_WDOG, WATCHDOG_CTRL_REG, WRITE_BUSY)));
+}
+
+/**
+ * \brief Enable/disable writing the Watchdog timer reload value.
+ * This filter prevents unintentionally setting the watchdog with a SW run-away.
+ *
+ * \param [in] enable   true = write enable for Watchdog reload value
+ *                      false = write disable for Watchdog reload value
+ *
+ * \sa hw_watchdog_set_pos_val
+ * \sa hw_watchdog_set_neg_val
+ *
+ */
+__STATIC_INLINE void hw_watchdog_write_value_ctrl(bool enable)
+{
+        while (hw_watchdog_check_write_busy());
+        if (enable) {
+                REG_SETF(SYS_WDOG, WATCHDOG_REG, WDOG_WEN, 0x0);
+        }
+        else {
+                REG_SETF(SYS_WDOG, WATCHDOG_REG, WDOG_WEN, 0xff);
+        }
+}
+
+/**
+ * \brief Set positive reload value of the watchdog timer
+ *
+ * \param [in] value reload value for 13 bits down counter in the PD_AON power domain
+ *             which is running on either a 10,24 ms clock or a 20,5 ms clock period
+ *             and can operate for 84 sec or 3 minutes (depending on the clock).
+ *
+ * \sa hw_watchdog_write_value_ctrl
+ *
+ */
+__STATIC_FORCEINLINE void hw_watchdog_set_pos_val(uint16_t value)
+{
+        uint32_t tmp;
+
+        ASSERT_WARNING(SYS_WDOG_WATCHDOG_REG_WDOG_VAL_Msk >= value); // check if reload value is greater than max allowed value
+        ASSERT_WARNING(!REG_GETF(SYS_WDOG, WATCHDOG_REG, WDOG_WEN)); // can not write register if WDOG_WEN is not zero
+        tmp = SYS_WDOG->WATCHDOG_REG;
+        REG_SET_FIELD(SYS_WDOG, WATCHDOG_REG, WDOG_VAL_NEG, tmp, 0);
+        REG_SET_FIELD(SYS_WDOG, WATCHDOG_REG, WDOG_VAL, tmp, value);
+
+        /* Wait until a new WDOG_VAL can be written in the Watchdog timer */
+        while (hw_watchdog_check_write_busy());
+
+        /* Write a new WDOG_VAL in the Watchdog timer */
+        SYS_WDOG->WATCHDOG_REG = tmp;
+
+}
+
+/**
+ * \brief Set negative reload value of the watchdog timer
+ *
+ * \param [in] value reload value from 0x1FFF to 0x00
+ *
+ * \sa hw_watchdog_write_value_ctrl
+ *
+ */
+__STATIC_INLINE void hw_watchdog_set_neg_val(uint16_t value)
+{
+        uint32_t tmp;
+
+        ASSERT_WARNING(SYS_WDOG_WATCHDOG_REG_WDOG_VAL_Msk >= value); // check if reload value is greater than max allowed value
+        ASSERT_WARNING(!REG_GETF(SYS_WDOG, WATCHDOG_REG, WDOG_WEN)); // can not write register if WDOG_WEN is not zero
+        tmp = SYS_WDOG->WATCHDOG_REG;
+        REG_SET_FIELD(SYS_WDOG, WATCHDOG_REG, WDOG_VAL_NEG, tmp, 1);
+        REG_SET_FIELD(SYS_WDOG, WATCHDOG_REG, WDOG_VAL, tmp, value);
+
+        /* Wait until a new WDOG_VAL can be written in the Watchdog timer */
+        while (hw_watchdog_check_write_busy());
+
+        /* Write a new WDOG_VAL in the Watchdog timer */
+        SYS_WDOG->WATCHDOG_REG = tmp;
+
+}
+
+/**
+ * \brief Get reload value of the watchdog timer
+ *
+ */
+__STATIC_INLINE uint16_t hw_watchdog_get_val(void)
+{
+        // The watchdog value cannot be read while watchdog is busy writing a new value
+        while (hw_watchdog_check_write_busy());
+
+        return REG_GETF(SYS_WDOG, WATCHDOG_REG, WDOG_VAL);
+}
+
+/**
+ * \brief Generate a reset signal of the system when reload value reaches 0
+ *
+ */
+__STATIC_FORCEINLINE void hw_watchdog_gen_RST(void)
+{
+        REG_SET_BIT(SYS_WDOG, WATCHDOG_CTRL_REG, NMI_RST);
+}
+
+/**
+ * \brief Generate an NMI when reload value reaches 0
+ *
+ */
+__STATIC_FORCEINLINE void hw_watchdog_gen_NMI(void)
+{
+        REG_CLR_BIT(SYS_WDOG, WATCHDOG_CTRL_REG, NMI_RST);
+}
+
+/**
+ * \brief Enable/disable Watchdog freeze functionality
+ *
+ * \param [in] enable   true = Watchdog timer can not be frozen when NMI_RST=0.
+ *                      false = Watchdog timer can be frozen/resumed when NMI_RST=0
+ *
+ * \sa hw_watchdog_freeze
+ * \sa hw_watchdog_unfreeze
+ * \sa hw_watchdog_gen_RST
+ *
+ */
+__STATIC_INLINE void hw_watchdog_freeze_ctrl(bool enable)
+{
+        if (enable) {
+                REG_SET_BIT(SYS_WDOG, WATCHDOG_CTRL_REG, WDOG_FREEZE_EN);
+        }
+        else {
+                REG_CLR_BIT(SYS_WDOG, WATCHDOG_CTRL_REG, WDOG_FREEZE_EN);
+        }
+}
+
+/**
+ * \brief Register an interrupt handler
+ *
+ * \param [in] handler function pointer to handler to call when an interrupt occurs
+ *
+ */
+void hw_watchdog_register_int(hw_watchdog_interrupt_cb handler);
+
+/**
+ * \brief Unregister an interrupt handler
+ *
+ */
+__RETAINED_CODE void hw_watchdog_unregister_int(void);
+
+/**
+ * \brief Handle NMI interrupt.
+ *
+ * \param [in] hardfault_args pointer to call stack
+ *
+ */
+__RETAINED_CODE void hw_watchdog_handle_int(unsigned long *hardfault_args);
+
+/**
+ * \brief Check what is generated when watchdog reaches 0 value
+ *
+ * If it is NMI (interrupt) or RST (system/wdog reset).
+ *
+ * \return HW_WDG_RESET_NMI if NMI interrupt is generated, otherwise HW_WDG_RESET_RST
+ *
+ */
+HW_WDG_RESET hw_watchdog_is_irq_or_rst_gen(void);
+
+
+#endif /* HW_WATCHDOG_H_ */
+
+
+/**
+ * \}
+ * \}
+ */

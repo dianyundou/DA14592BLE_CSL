@@ -1,0 +1,20 @@
+<flash_configurations>
+  <configuration name="MX25U3235F">
+    <flash_size>0x400000</flash_size>
+    <flash_burstcmda_reg_value>0xA8A500EB</flash_burstcmda_reg_value>
+    <flash_burstcmdb_reg_value>0x00000066</flash_burstcmdb_reg_value>
+    <flash_write_config_command>0x01 0x40 0x00</flash_write_config_command>
+  </configuration>
+  <configuration name="W25Q32JWIM">
+    <flash_size>0x400000</flash_size>
+    <flash_burstcmda_reg_value>0xA8A500EB</flash_burstcmda_reg_value>
+    <flash_burstcmdb_reg_value>0x00001066</flash_burstcmdb_reg_value>
+    <flash_write_config_command>0x31 0x02 0x00</flash_write_config_command>
+  </configuration>
+  <configuration name="W25Q32JWIQ">
+    <flash_size>0x400000</flash_size>
+    <flash_burstcmda_reg_value>0xA8FF00EB</flash_burstcmda_reg_value>
+    <flash_burstcmdb_reg_value>0x00001026</flash_burstcmdb_reg_value>
+    <flash_write_config_command>0x31 0x02 0x00</flash_write_config_command>
+  </configuration>
+</flash_configurations>
